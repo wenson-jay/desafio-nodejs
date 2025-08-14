@@ -1,6 +1,6 @@
 # Desafio Node.js API
 
-API minimalista usando Fastify + TypeScript + Drizzle ORM com PostgreSQL. Build TS→JS (Opção B) habilitado.
+API de cursos usando Fastify + TypeScript + Drizzle ORM com PostgreSQL.
 
 ## Tecnologias
 
@@ -8,8 +8,9 @@ API minimalista usando Fastify + TypeScript + Drizzle ORM com PostgreSQL. Build 
 - TypeScript + Zod (`fastify-type-provider-zod`)
 - Drizzle ORM + drizzle-kit
 - PostgreSQL (via `docker-compose.yml`)
-- Swagger UI/OpenAPI (`@fastify/swagger` + `@scalar/fastify-api-reference`)
+- Swagger com Scalar UI/OpenAPI (`@fastify/swagger` + `@scalar/fastify-api-reference`)
 - Vitest + Supertest
+- Biome
 
 ## Requisitos
 
@@ -20,15 +21,19 @@ API minimalista usando Fastify + TypeScript + Drizzle ORM com PostgreSQL. Build 
 ## Configuração
 
 1. Copie `.env.example` para `.env` e ajuste:
+
    ```bash
    cp .env.example .env
    ```
+
    Variáveis principais:
+
    - `DATABASE_URL` (ex.: `postgresql://docker:docker@localhost:5432/desafio`)
    - `NODE_ENV=development` para habilitar `/docs`.
    - `PORT` (ex.: `5555`)
 
 2. Suba o banco de dados:
+
    ```bash
    docker compose up -d
 
@@ -36,19 +41,23 @@ API minimalista usando Fastify + TypeScript + Drizzle ORM com PostgreSQL. Build 
    ```
 
 3. Instale as dependências:
+
    ```bash
    pnpm install
    ```
 
 4. Rode as migrações (Drizzle):
+
    ```bash
    pnpm db:migrate
    ```
 
 5. Inicie em desenvolvimento:
+
    ```bash
    pnpm dev
    ```
+
    - Healthcheck: `GET http://localhost:5555/health` (ou porta definida em `PORT`)
    - Docs (dev): `GET http://localhost:5555/docs`
 
