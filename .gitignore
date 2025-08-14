@@ -1,0 +1,49 @@
+node_modules
+
+ # Build outputs
+ dist
+ build
+ out
+ .tmp
+ .temp
+
+ # TypeScript
+ *.tsbuildinfo
+
+ # Logs
+ logs
+ *.log
+ npm-debug.log*
+ yarn-debug.log*
+ yarn-error.log*
+ pnpm-debug.log*
+ .pnpm-debug.log*
+
+ # Environment files
+ .env
+ .env.*
+ !.env.example
+
+ # Test coverage
+ coverage
+ .nyc_output
+
+ # OS files
+ .DS_Store
+ Thumbs.db
+
+ # Editors/IDE
+ .vscode/
+ .idea/
+ *.swp
+ *.swo
+
+ # Docker (local data/config)
+ docker-data/
+ *.local.yml
+
+ # Package manager caches
+ .pnpm-store/
+
+ # Misc caches
+ .eslintcache
