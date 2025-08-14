@@ -1,49 +1,52 @@
 node_modules
 
- # Build outputs
- dist
- build
- out
- .tmp
- .temp
+# Build outputs
+dist
+build
+out
+.tmp
+.temp
 
- # TypeScript
- *.tsbuildinfo
+# TypeScript
+*.tsbuildinfo
 
- # Logs
- logs
- *.log
- npm-debug.log*
- yarn-debug.log*
- yarn-error.log*
- pnpm-debug.log*
- .pnpm-debug.log*
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
 
- # Environment files
- .env
- .env.*
- !.env.example
+# Environment files
+.env
+.env.*
+!.env.example
 
- # Test coverage
- coverage
- .nyc_output
+# Test coverage
+coverage
+.nyc_output
 
- # OS files
- .DS_Store
+# OS files
+.DS_Store
  Thumbs.db
 
- # Editors/IDE
- .vscode/
- .idea/
- *.swp
- *.swo
+# Editors/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
- # Docker (local data/config)
- docker-data/
- *.local.yml
+# Docker (local data/config)
+docker-data/
+*.local.yml
 
- # Package manager caches
- .pnpm-store/
+# Package manager caches
+.pnpm-store/
 
- # Misc caches
- .eslintcache
+# Misc caches
+.eslintcache
+
+# Build
+dist
