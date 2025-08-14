@@ -1,6 +1,6 @@
 # Desafio Node.js API
 
-API minimalista usando Fastify + TypeScript + Drizzle ORM com PostgreSQL.
+API minimalista usando Fastify + TypeScript + Drizzle ORM com PostgreSQL. Build TS→JS (Opção B) habilitado.
 
 ## Tecnologias
 
@@ -24,12 +24,15 @@ API minimalista usando Fastify + TypeScript + Drizzle ORM com PostgreSQL.
    cp .env.example .env
    ```
    Variáveis principais:
-   - `DATABASE_URL` (ex.: `postgres://docker:docker@localhost:5432/desafio`)
+   - `DATABASE_URL` (ex.: `postgresql://docker:docker@localhost:5432/desafio`)
    - `NODE_ENV=development` para habilitar `/docs`.
+   - `PORT` (ex.: `5555`)
 
 2. Suba o banco de dados:
    ```bash
    docker compose up -d
+
+   Observação: `docker/setup.sql` cria o banco `desafio_teste` (PostgreSQL) ao subir o container.
    ```
 
 3. Instale as dependências:
@@ -46,16 +49,24 @@ API minimalista usando Fastify + TypeScript + Drizzle ORM com PostgreSQL.
    ```bash
    pnpm dev
    ```
-   - Healthcheck: `GET http://localhost:3333/health`
-   - Docs (dev): `GET http://localhost:3333/docs`
+   - Healthcheck: `GET http://localhost:5555/health` (ou porta definida em `PORT`)
+   - Docs (dev): `GET http://localhost:5555/docs`
+
+6. Build (produção):
+   ```bash
+   pnpm build
+   pnpm start
+   ```
+   - O `start` carrega variáveis do `.env` via `dotenv-cli` e executa `dist/server.js`.
 
 ## Scripts
 
 - `pnpm dev`: inicia com watch e `--experimental-strip-types`
-- `pnpm start`: inicia sem build (veja Nota de Produção)
+- `pnpm build`: compila TypeScript para `dist/`
+- `pnpm start`: inicia o servidor compilado (`dist/server.js`) carregando `.env`
 - `pnpm db:generate`: gera migrations
 - `pnpm db:migrate`: aplica migrations
-- `pnpm db:seed`: executa seed (se configurado)
+- `pnpm db:seed`: executa seed (usa `--experimental-strip-types` diretamente em `src/database/seed.ts`)
 - `pnpm db:studio`: abre o Drizzle Studio
 - `pnpm test`: executa testes (Vitest)
 
@@ -68,18 +79,54 @@ Base: `http://localhost:3333`
 - `GET /courses/:id` → `200 { course: { id, title, description|null } }` ou `404 { message }`
 - `POST /courses` → body `{ title: string>=5, description?: string }` retorna `201 { courseId }`
 
+### Fluxo principal (Create Course)
+
+Diagrama do fluxo do endpoint `POST /courses`:
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant C as Client
+  participant F as Fastify (Route)
+  participant V as Zod (Validator)
+  participant D as Drizzle (DB)
+  participant PG as PostgreSQL
+
+  C->>F: POST /courses { title, description? }
+  F->>V: valida body (z.object)
+  V-->>F: ok | erro 400
+  alt válido
+    F->>D: insert into courses returning id
+    D->>PG: SQL (INSERT ... RETURNING id)
+    PG-->>D: { id }
+    D-->>F: { id }
+    F-->>C: 201 { courseId }
+  else inválido
+    F-->>C: 400 { message }
+  end
+```
+
 ## Modelo de Dados (Drizzle)
 
 - `users(id uuid pk, name text, email text unique)`
 - `courses(id uuid pk, title text unique, description text|null)`
 - `enrollments(id uuid pk, course_id fk, user_id fk, created_at timestamptz default now, unique(course_id,user_id))`
 
-## Nota de Produção
+## Execução
 
-O script `start` atual não compila TypeScript. Opções:
+- Desenvolvimento: `pnpm dev`
+- Produção: `pnpm build && pnpm start`
 
-- Ajustar `start` para usar `--experimental-strip-types`.
-- Ou adicionar etapa de build (`tsc` emitindo JS) e apontar `main`/`start` para `dist/`.
+## Testes e Seed
+
+- Testes (usa `.env.test`):
+  ```bash
+  pnpm test
+  ```
+- Seed (usa `.env`):
+  ```bash
+  pnpm db:seed
+  ```
 
 ## Licença
 
