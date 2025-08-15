@@ -11,6 +11,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "node --experimental-strip-types --env-file .env ./src/database/seed.ts",
     "db:studio": "drizzle-kit studio",
+    "pretest": "dotenv -e .env.test drizzle-kit migrate",
     "test": "dotenv -e .env.test vitest run",
     "lint": "biome check",
     "build": "tsc -p tsconfig.build.json"
