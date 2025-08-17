@@ -5,6 +5,7 @@ import { app } from '../app.ts';
 import { db } from '../database/client.ts';
 import { courses, enrollments } from '../database/schema.ts';
 import { makeCourse } from '../tests/factories/make-course.ts';
+import { makeAuthenticatedUser } from '../tests/factories/make-user.ts';
 
 describe('Get courses e2e', () => {
   beforeAll(async () => {
@@ -16,12 +17,15 @@ describe('Get courses e2e', () => {
   });
 
   it('obter lista de cursos pelo titulo com sucesso', async () => {
+    const { accessToken } = await makeAuthenticatedUser();
     const titleId = faker.string.uuid();
 
     await makeCourse({ title: titleId });
 
     const response = await request(app.server)
       .get(`/courses?search=${titleId}`)
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${accessToken}`)
       .send();
 
     expect(response.statusCode).toBe(200);
@@ -42,6 +46,8 @@ describe('Get courses e2e', () => {
   });
 
   it('obter lista de cursos por paginação com sucesso', async () => {
+    const { accessToken } = await makeAuthenticatedUser();
+
     await db.transaction(async (trx) => {
       await trx.delete(courses);
       await trx.delete(enrollments);
@@ -53,6 +59,8 @@ describe('Get courses e2e', () => {
 
     const response = await request(app.server)
       .get('/courses?pageIndex=2&perPage=10')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${accessToken}`)
       .send();
 
     expect(response.statusCode).toBe(200);
@@ -73,6 +81,8 @@ describe('Get courses e2e', () => {
   });
 
   it('obter lista de cursos por ordenação do titulo em ordem crescente com sucesso', async () => {
+    const { accessToken } = await makeAuthenticatedUser();
+
     await db.transaction(async (trx) => {
       await trx.delete(courses);
       await trx.delete(enrollments);
@@ -84,6 +94,8 @@ describe('Get courses e2e', () => {
 
     const response = await request(app.server)
       .get('/courses?pageIndex=1&perPage=10&orderBy=title&orderDirection=asc')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${accessToken}`)
       .send();
 
     expect(response.statusCode).toBe(200);
@@ -109,6 +121,8 @@ describe('Get courses e2e', () => {
   });
 
   it('obter lista de cursos por ordenação do titulo em ordem decrescente com sucesso', async () => {
+    const { accessToken } = await makeAuthenticatedUser();
+
     await db.transaction(async (trx) => {
       await trx.delete(courses);
       await trx.delete(enrollments);
@@ -120,6 +134,8 @@ describe('Get courses e2e', () => {
 
     const response = await request(app.server)
       .get('/courses?pageIndex=1&perPage=10&orderBy=title&orderDirection=desc')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${accessToken}`)
       .send();
 
     expect(response.statusCode).toBe(200);

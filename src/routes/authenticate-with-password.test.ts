@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { app } from '../app.ts';
 import { makeUser } from '../tests/factories/make-user.ts';
 
-describe('Create course e2e', () => {
+describe('Authenticate with password e2e', () => {
   beforeAll(async () => {
     await app.ready();
   });
@@ -12,7 +12,7 @@ describe('Create course e2e', () => {
     await app.close();
   });
 
-  it('autenticar com e-mail e senha com sucesso', async () => {
+  it('deve autenticar com e-mail e senha com sucesso', async () => {
     const { passwordBeforeHash, user } = await makeUser();
 
     const response = await request(app.server)
@@ -26,6 +26,22 @@ describe('Create course e2e', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
       accessToken: expect.any(String),
+    });
+  });
+
+  // biome-ignore lint/suspicious/noSkippedTests: <explanation>
+  it.skip('não deve autenticar com e-mail ou senha inválido', async () => {
+    const response = await request(app.server)
+      .post('/sessions/password')
+      .set('Content-Type', 'application/json')
+      .send({
+        email: 'invalid-email',
+        password: 'invalid-password',
+      });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toEqual({
+      message: 'Credenciais inválidas',
     });
   });
 });

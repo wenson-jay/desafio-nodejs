@@ -3,12 +3,15 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 import { db } from '../database/client.ts';
 import { courses } from '../database/schema.ts';
+import { checkRequestJWT } from './hooks/check-request-jwt.ts';
+import { checkUserRole } from './hooks/check-user-role.ts';
 
 // biome-ignore lint/suspicious/useAwait: <>
 export const getCourseByIdRoute: FastifyPluginAsyncZod = async (app) => {
   app.get(
     '/courses/:id',
     {
+      preHandler: [checkRequestJWT, checkUserRole()],
       schema: {
         tags: ['Courses'],
         summary: 'Detalhes de um curso',

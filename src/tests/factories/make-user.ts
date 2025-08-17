@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { faker } from '@faker-js/faker';
 import { hash } from 'argon2';
+import { app } from '../../app.ts';
 import { db } from '../../database/client.ts';
 import { users } from '../../database/schema.ts';
 
@@ -26,4 +27,22 @@ export async function makeUser(overrides: MakeUserProps = {}) {
     .returning();
 
   return { user: user[0], passwordBeforeHash };
+}
+
+export async function makeAuthenticatedUser(overrides: MakeUserProps = {}) {
+  const { user } = await makeUser(overrides);
+
+  const accessToken = app.jwt.sign(
+    {
+      role: user.role,
+    },
+    {
+      sub: user.id,
+    }
+  );
+
+  return {
+    user,
+    accessToken,
+  };
 }

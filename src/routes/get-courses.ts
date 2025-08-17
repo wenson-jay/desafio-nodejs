@@ -3,12 +3,14 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 import { db } from '../database/client.ts';
 import { courses, enrollments } from '../database/schema.ts';
+import { checkRequestJWT } from './hooks/check-request-jwt.ts';
 
 // biome-ignore lint/suspicious/useAwait: <>
 export const getCoursesRoute: FastifyPluginAsyncZod = async (app) => {
   app.get(
     '/courses',
     {
+      preHandler: checkRequestJWT,
       schema: {
         tags: ['Courses'],
         summary: 'Lista de cursos',
@@ -66,7 +68,6 @@ export const getCoursesRoute: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { search, orderBy, pageIndex, perPage, orderDirection } =
         request.query;
-
       const conditions: SQL[] = [];
 
       if (search) {
