@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import fastifyJwt from '@fastify/jwt';
 import fastifySwagger from '@fastify/swagger';
 import fastifyApiReference from '@scalar/fastify-api-reference';
@@ -54,8 +55,24 @@ if (env.NODE_ENV === 'development') {
 app.setSerializerCompiler(serializerCompiler);
 app.setValidatorCompiler(validatorCompiler);
 
+const privateKey = readFileSync(
+  new URL('../certs/private_key.pem', import.meta.url),
+  'utf-8'
+);
+
+const publicKey = readFileSync(
+  new URL('../certs/public_key.pem', import.meta.url),
+  'utf-8'
+);
+
 app.register(fastifyJwt, {
-  secret: env.JWT_SECRET_KEY,
+  secret: {
+    private: privateKey,
+    public: publicKey,
+  },
+  sign: {
+    algorithm: 'RS256',
+  },
 });
 
 app.get('/health', () => {

@@ -27,4 +27,5 @@ docker-data/
 *.local.yml
 .pnpm-store/
 .eslintcache
-dist
+
+certs
